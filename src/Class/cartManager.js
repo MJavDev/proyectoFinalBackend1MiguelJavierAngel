@@ -1,4 +1,5 @@
 import { cartDb } from "../models/carts.model.js";
+
 class CartManager {
   constructor() {
   }
@@ -6,7 +7,6 @@ class CartManager {
     const cartInDataBase = await cartDb.find().populate("products.product").lean();
     return cartInDataBase;
   }
-
   async cartsInDatabase() {
     const cartsInDatabase = await this.showDataBase();
     if (cartsInDatabase.length) {
@@ -14,13 +14,15 @@ class CartManager {
     } else
       return {
         messaje:
-          "Se realizo la busqueda y no se encontró ningun carrito en la base de datos",
+          "No se encontró carrito en BBDD",
       };
   }
+
   async addCart() {
     await cartDb.create({ products: [] });
-    return { messaje: "Se agregó correctamente el nuevo carrito." };
+    return { messaje: "Nuevo carrito agregado" };
   }
+
   async getCartById(cartId) {
     try {
       const cartFinded = await cartDb.findById(cartId).populate("products.product").lean();
@@ -29,15 +31,16 @@ class CartManager {
       }
       return {
         message:
-          "Este carrito aun no tiene productos cargados dentro del mismo",
+          "Carrito vacío",
       };
     } catch {
       return {
         message:
-          "El carrito con el id:" + cartId + " no existe en la base de datos",
+          "No existe carrito con id:" + cartId,
       };
     }
   }
+  
   async addProductInCart(params) {
     const cartsInDatabase = await this.showDataBase();
     const cartFinded = cartsInDatabase.find((item) => item._id == params.idcart);
@@ -52,10 +55,8 @@ class CartManager {
         );
         return {
           messaje:
-            "Se agregó una unidad mas del producto con id:" +
-            params.idproduct +
-            " al carrito con id:" +
-            params.idcart,
+            "Se agregó una unidad más del producto con id:" +
+            params.idproduct + " al carrito con id:" + params.idcart,
         };
       } else {
         const productInCart = {
@@ -69,20 +70,17 @@ try {
   );
   return {
     messaje:
-      "Se agregó el producto con id:" +
-      params.idproduct +
-      " al carrito con id:" +
-      params.idcart,
+      "Se agregó el producto con id:" + params.idproduct + " al carrito con id:" + params.idcart,
   };
 } catch {
-  return { status: "error",messaje: "Problemas al agregar el producto en el carrito" };
+  return { status: "error",messaje: "Error al agregar el producto en el carrito" };
 }
-     
       }
     } else {
       return { status: "error",messaje: "Ese carrito no se encuentra en la base de datos" };
     }
   }
+
 async clearCart(idcart) {
   try {
     const cartFinded = await cartDb.findById(idcart);
@@ -120,17 +118,15 @@ async deleteOneProductFronCart(params){
       );
       return {
         messaje:
-          "Se eliminaron todas las unidades del producto con id:" +
-          params.idproduct +
-          " del carrito con id:" +
-          params.idcart,
+          "Se eliminaron todas las unidades del producto con id:" + params.idproduct + " del carrito con id:" + params.idcart,
       };
   }else{
     return{
       messaje:
-        "Ese carrito no existe"
+        "Carrito inexistente"
     };
   }}
+
   async modificateQuantityProductFromCart(params,body){
     const cartsInDatabase = await this.showDataBase();
     const cartFinded = cartsInDatabase.find((item) => item._id == params.idcart);
@@ -144,10 +140,10 @@ async deleteOneProductFronCart(params){
           { _id: params.idcart },cartFinded)
           return {
             messaje:
-              "Se modifico el quantity del producto" }
-       }else {return{ messaje: "Ese producto aun no existe en este carrito, por lo tanto no podes cambiar la cantidad" };}
-      }else{  return{    messaje:      "Ese carrito no existe"  };
-}  }
+              "Quantity del producto modificado" }
+       }else {return{ messaje: "Producto inexistente en carrito" };}
+      }else{  return{    messaje:      "Carrito inexistente"  };
+} }
 
 async modificateCart(params,body){
   const cartsInDatabase = await this.showDataBase();
@@ -158,9 +154,11 @@ async modificateCart(params,body){
         { _id: params.idcart },cartModificated)
         return {
           messaje:
-            "Se cambiaron todos los productos del carrito, por el arreglo de productos enviado por body" }
-    }else{  return{    messaje:      "Ese carrito no existe"  };
+            "Productos del carrito cambiados debido al arreglo de productos enviado por body" }
+    }else{  return{    messaje:      "Carrito inexistente"  };
 }  }
 }
+
+
 
 export { CartManager }

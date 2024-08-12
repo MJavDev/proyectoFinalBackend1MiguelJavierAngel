@@ -8,7 +8,7 @@ class ProductManager {
     } catch {}
       return {
         status: "error",
-        messaje: "No se pudo acceder a la base de datos",
+        messaje: "Error al acceder a BBDD",
       };
   }
   async showDataBase(limit = 10, page = 1, sort, category) {
@@ -28,7 +28,7 @@ if (sort) {
     } catch {
       return {
         status: "error",
-        messaje: "No se pudo acceder a la base de datos",
+        messaje: "Error al acceder a BBDD",
       };
     }
   }
@@ -46,12 +46,13 @@ if (sort) {
         return {
           status: "error",
           messaje:
-            "Se realizo la busqueda y no se encontró ningun producto en la base de datos",
+            "Producto inexistente en BBDD",
         };
     } else {
       return productsInDataBase;
     }
   }
+
   async getProductById(productId) {
     try {
       const productFinded = await productDb.findById(productId);
@@ -66,6 +67,7 @@ if (sort) {
       };
     }
   }
+
   async addProduct(body) {
     const { title, description, code, price, stock, category } = body;
     if (title && description && code && price && stock && category) {
@@ -130,6 +132,7 @@ if (sort) {
       };
     }
   }
+
   async modifyProduct(productId, body) {
     const productsInDataBase = await this.showDataBase();
     console.log(productsInDataBase);
@@ -179,7 +182,7 @@ if (sort) {
             return {
               status: "error",
               messaje:
-                "El campo thumbnails debe ser un arreglo de strings (array)",
+                "El campo thumbnails debe ser un array",
             };
           }
         }
@@ -207,12 +210,12 @@ if (sort) {
           );
           return {
             status: "succes",
-            messaje: "Se modificó correctamente el producto.",
+            messaje: "Producto modificado",
           };
         } catch {
           return {
             status: "error",
-            messaje: "Error al querer modificar un producto",
+            messaje: "Error al intentar modificar producto",
           };
         }
       }
@@ -220,22 +223,18 @@ if (sort) {
     return {
       status: "error",
       messaje:
-        "El producto a modificar con el id:" +
-        productId +
-        " no se encuentra en la base de datos",
+        "No se encuentra el producto con id:" + productId,
     };
   }
   async deleteProduct(productId) {
     try {
       await productDb.deleteOne({ _id: productId });
-      return { status: "succes", messaje: "Se borro el producto con éxito" };
+      return { status: "succes", messaje: "Producto borrado" };
     } catch {
       return {
         status: "error",
         messaje:
-          "El producto con el id: " +
-          productId +
-          " no se encuentra en la base de datos",
+          "No se encuentra el producto con id: " + productId,
       };
     }
   }
